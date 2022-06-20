@@ -18,12 +18,15 @@ def mkdir_p(path):
             pass
         else: raise
 
-import cPickle as pickle
+#import cPickle as pickle
+import pickle
 import errno
+import traceback
 
 class ShapenetRenderer():
     def __init__(self, numPoses=10, imX=224, imY=224):
-        print 'Init:'
+        print('Init:')
+        #self.numPoses = 1 
         self.numPoses = numPoses
         self.imX = imX
         self.imY = imY
@@ -32,18 +35,23 @@ class ShapenetRenderer():
 
     def renderAllSynsets(self):
         for sId,synset in enumerate(self.synsets):
-            print synset
+            print( synset)
             for mId in range(len(self.synsetModels[sId])):
             #for mId in range(10):
-                print mId
+                print (mId)
                 mName = self._loadNewModel(sId, mId)
                 renderDir = osp.join(self.config['renderPrecomputeDir'] ,synset, mName)
                 mkdir_p(renderDir)
                 poseSamples = self._randomPoseSamples()
-
+                print(poseSamples)
+                print(renderDir)
                 infoFile = osp.join(renderDir,'poseInfo.pickle')
-                with open(infoFile, 'w') as f:
-                    pickle.dump([poseSamples], f)
+                try:
+                    with open(infoFile, 'wb') as f:
+                        pickle.dump(list(poseSamples), f, protocol=-1)
+                except:
+                    traceback.print_stack()
+                    #print (traceback.format_exc())
                 self.renderer.renderViews(poseSamples, renderDir)
 
     def _loadNewModel(self, synsetId, modelId):
@@ -60,11 +68,12 @@ class ShapenetRenderer():
 
     def _initModelInfo(self):
         self.config = startup.params()
-        self.synsets = ['03001627','02691156','02958343']
+        #self.synsets = ['03001627','02691156','02958343']
+        self.synsets = ['03001627']
         self.synsetModels = [[osp.join(self.config['shapenetDir'],s,f,'model.obj') for f in os.listdir(osp.join(self.config['shapenetDir'],s)) if len(f) > 3] for s in self.synsets]
 
 
 if __name__ == '__main__':
-    print 'Init:'
+    print('Init:')
     rnd = ShapenetRenderer()
     rnd.renderAllSynsets()

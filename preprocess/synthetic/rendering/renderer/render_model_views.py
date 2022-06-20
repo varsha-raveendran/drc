@@ -229,7 +229,9 @@ print("starting")
 bpy.context.scene.render.resolution_percentage = 50
 bpy.context.scene.render.resolution_x = im_x*(100/bpy.context.scene.render.resolution_percentage)
 bpy.context.scene.render.resolution_y = im_y*(100/bpy.context.scene.render.resolution_percentage)
-bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
+#bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
+bpy.context.scene.render.film_transparent= 1 
+
 bpy.context.scene.render.image_settings.file_format = 'OPEN_EXR'
 #bpy.context.scene.render.image_settings.file_format = 'PNG'
 bpy.context.scene.render.image_settings.use_zbuffer = True
@@ -260,7 +262,7 @@ rl = tree.nodes.new(type="CompositorNodeRLayers")
 composite = tree.nodes.new(type = "CompositorNodeComposite")
 composite.location = 200,0
 links.new(rl.outputs['Image'],composite.inputs['Image'])
-links.new(rl.outputs['Z'],composite.inputs['Z'])
+links.new(rl.outputs['Depth'],composite.inputs['Z'])
 
 ###### Load rendering light parameters ######
 #BASE_DIR = os.getcwd()
@@ -274,6 +276,7 @@ light_dist_highbound = g_syn_light_dist_highbound
 
 ###### Input parameters ######
 shape_file = sys.argv[-4]
+print(shape_file)
 shape_view_params_file = sys.argv[-3]
 out_prefix = sys.argv[-2]
 syn_images_folder = sys.argv[-1]
@@ -287,9 +290,9 @@ if not os.path.exists(syn_images_folder):
     os.makedirs(syn_images_folder)
 
 bpy.ops.import_scene.obj(filepath=shape_file)
-#print(shape_view_params_file)
-#print("loaded shape")
-#print(view_params)
+print(shape_view_params_file)
+print("loaded shape")
+print(view_params)
 
 ###### Set lights ######
 bpy.data.objects['Lamp'].data.energy = 0

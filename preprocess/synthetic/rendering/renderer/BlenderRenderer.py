@@ -1,6 +1,6 @@
 import numpy as np
 import sys, glob
-from global_variables import *
+from .global_variables import *
 import os
 import subprocess
 import pickle
@@ -131,7 +131,7 @@ class Renderer:
             renders = [renders[ix] for ix in range(nViews)]
         
         for render in renders:
-            print render
+            print(render)
             rgbIm = scipy.misc.imread(render)
             dMap = loadDepth(render.replace('render_','depth_'))
             plt.figure(figsize=(12,6))
