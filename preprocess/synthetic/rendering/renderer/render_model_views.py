@@ -101,11 +101,11 @@ def get_4x4_RT_matrix_from_blender(cam):
     # Convert camera location to translation vector used in coordinate changes
     # T_world2bcam = -1*R_world2bcam*cam.location
     # Use location from matrix_world to account for constraints:     
-    T_world2bcam = -1*R_world2bcam * location
+    T_world2bcam = -1*R_world2bcam @ location
 
     # Build the coordinate transform matrix from world to computer vision camera
-    R_world2cv = R_bcam2cv*R_world2bcam
-    T_world2cv = R_bcam2cv*T_world2bcam
+    R_world2cv = R_bcam2cv @ R_world2bcam
+    T_world2cv = R_bcam2cv @ T_world2bcam
 
     # put into 3x4 matrix
     RT = Matrix((
@@ -298,7 +298,7 @@ print(view_params)
 bpy.data.objects['Lamp'].data.energy = 0
 bpy.ops.object.select_all(action='TOGGLE')
 if 'Lamp' in list(bpy.data.objects.keys()):
-    bpy.data.objects['Lamp'].select = True # remove default light
+    bpy.data.objects['Lamp'].select_set(True) # remove default light
 bpy.ops.object.delete()
 
 for param in view_params:
@@ -308,14 +308,14 @@ for param in view_params:
     rho = param[3]
 
     # clear default lights
-    bpy.ops.object.select_by_type(type='LAMP')
+    bpy.ops.object.select_by_type(type='LIGHT')
     bpy.ops.object.delete(use_global=False)
 
     # set environment lighting
     #bpy.context.space_data.context = 'WORLD'
-    bpy.context.scene.world.light_settings.use_environment_light = True
-    bpy.context.scene.world.light_settings.environment_energy = np.random.uniform(g_syn_light_environment_energy_lowbound, g_syn_light_environment_energy_highbound)
-    bpy.context.scene.world.light_settings.environment_color = 'PLAIN'
+    #bpy.context.scene.world.light_settings.use_environment_light = True
+    #bpy.context.scene.world.light_settings.environment_energy = np.random.uniform(g_syn_light_environment_energy_lowbound, g_syn_light_environment_energy_highbound)
+    #bpy.context.scene.world.light_settings.environment_color = 'PLAIN'
 
     # set point lights
     for i in range(random.randint(light_num_lowbound,light_num_highbound)):

@@ -6,7 +6,7 @@ import subprocess
 import pickle
 import scipy.io
 import scipy.misc
-
+import imageio
 import OpenEXR, Imath
 import png
 
@@ -100,8 +100,9 @@ class Renderer:
             im_rgb = np.dstack([normalize(np.dstack([r,g,b])), a])
             
             saveUint16(depthToint16(dmap), dFile)
-            scipy.misc.imsave(rgbFile, im_rgb)
-            
+            #scipy.misc.imsave(rgbFile, im_rgb)
+            imageio.imwrite(rgbFile, im_rgb)
+
             exrimage.close()
             
         ## remove unwanted files
